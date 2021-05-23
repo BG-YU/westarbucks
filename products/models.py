@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.deletion import CASCADE
+from django.db.models.deletion import CASCADE, DO_NOTHING
 from django.db.models.fields import CharField, DecimalField, IntegerField, TextField
 from django.db.models.fields.related import ForeignKey
 
@@ -49,12 +49,17 @@ class Product(models.Model):
     nutrition = models.ForeignKey(Nutrition, on_delete=models.DO_NOTHING)
 
     # Many to Many 설정
-    # 중간테이블에 컬럼을 추가해서 생성을 할려면 through를 통해 중간테이블을 명시해주소
-    # clsss를 중간테이블명으로 헤서 수동으로 생성해주면 되는듯?
-    allegry = models.ManyToManyField(Allergy)
+    allegry = models.ManyToManyField(Allergy, through='Product_Allergy')
 
     class Meta:
         db_table = 'products'
+
+class Product_Allergy(models.Model):
+    allergy = models.ForeignKey(Allergy, on_delete=DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=CASCADE)
+
+    class Meta:
+        db_table = 'products_allergy'
 
 class Image(models.Model):
     image_url = models.CharField(max_length=200)
